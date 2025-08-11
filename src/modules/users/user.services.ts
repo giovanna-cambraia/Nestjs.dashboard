@@ -4,18 +4,27 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDTO } from './domain/dto/createUser.dto';
 import { UpdateUserDTO } from './domain/dto/updateUser.dto';
 import * as bcrypt from 'bcrypt';
+import { userSelectField } from '../utils/userSelectFields';
+
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService
+  ) {}
 
   async create(body: CreateUserDTO): Promise<User> {
     body.password = await this.hashPassword(body.password);
-    return await this.prisma.user.create({ data: body });
+    return await this.prisma.user.create({
+      data: body,
+      select: userSelectField,
+    });
   }
 
   async list() {
-    return await this.prisma.user.findMany();
+    return await this.prisma.user.findMany({
+      select: userSelectField,
+      
+    });
   }
 
   async show(id: number) {
@@ -30,7 +39,11 @@ export class UserService {
       body.password = await this.hashPassword(body.password);
     }
 
-    return await this.prisma.user.update({ where: { id }, data: body });
+    return await this.prisma.user.update({
+      where: { id },
+      data: body,
+      select: userSelectField
+    });
   }
 
   async delete(id: number) {
@@ -38,9 +51,25 @@ export class UserService {
     return await this.prisma.user.delete({ where: { id: Number(id) } });
   }
 
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+      select: userSelectField,
+    });
+  }
+
   private async isIdExists(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     if (!user) {
@@ -51,6 +80,6 @@ export class UserService {
   }
 
   private async hashPassword(password: string) {
-    return await bcrypt.hash(password, 10)
+    return await bcrypt.hash(password, 10);
   }
 }

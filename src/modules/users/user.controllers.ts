@@ -5,7 +5,6 @@ import {
   Get,
   Patch,
   Post,
-  Res,
 } from '@nestjs/common';
 import { UserService } from './user.services';
 import { CreateUserDTO } from './domain/dto/createUser.dto';
@@ -17,8 +16,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  list(@Res() res: Response) {
-    console.log(res);
+  list() {
     return this.userService.list();
   }
 
