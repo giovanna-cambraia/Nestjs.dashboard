@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from '../users/user.services';
 import { CreateUserDTO } from '../users/domain/dto/createUser.dto';
 import { AuthRegisterDTO } from './domain/dto/authRegisterUser.dto';
+import { AuthResetPasswordDTO } from './domain/dto/authResetPassoword.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,7 @@ export class AuthService {
   async login({ email, password }: AuthLoginDTO) {
     const user = await this.userService.findByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || ! bcrypt.compare(password, user.password)) {
       throw new UnauthorizedException('Email or password is incorrect');
     }
 
@@ -46,6 +47,17 @@ export class AuthService {
     };
 
     const user = await this.userService.create(newUser);
+
+    return await this.generateJwtToken(user);
+  }
+
+  async resetPassword({ token, password }: AuthResetPasswordDTO) {
+    // Reset password logic
+    const { valid, decoded } = await this.jwtService.verifyAsync(token);
+
+    if (!valid) throw new UnauthorizedException('Invalid token');
+
+    const user = await this.userService.update(decoded.sub, { password });
 
     return await this.generateJwtToken(user);
   }
