@@ -4,7 +4,7 @@ import { Role, User } from 'generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthLoginDTO } from './domain/dto/authLogin.dto';
 import * as bcrypt from 'bcrypt';
-import { UserService } from '../users/user.services';
+import { UserService } from '../users/user.service';
 import { CreateUserDTO } from '../users/domain/dto/createUser.dto';
 import { AuthRegisterDTO } from './domain/dto/authRegisterUser.dto';
 import { AuthResetPasswordDTO } from './domain/dto/authResetPassoword.dto';
@@ -58,12 +58,14 @@ export class AuthService {
 
     if (!valid || !decoded) throw new UnauthorizedException('Invalid token');
 
-    const user = await this.userService.update(Number(decoded!.sub), { password });
+    const user = await this.userService.update(Number(decoded!.sub), {
+      password,
+    });
 
     return await this.generateJwtToken(user);
   }
 
-  private async validateToken(token: string): Promise<ValidateTokenDTO> {
+  async validateToken(token: string): Promise<ValidateTokenDTO> {
     try {
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
@@ -72,8 +74,8 @@ export class AuthService {
       });
 
       return { valid: true, decoded };
-    } catch (error ) {
-      return { valid: false, message: error.message }
+    } catch (error) {
+      return { valid: false, message: error.message };
     }
   }
 
