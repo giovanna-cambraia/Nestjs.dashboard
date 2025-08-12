@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthLoginDTO } from './domain/dto/authLogin.dto';
 import { AuthRegisterDTO } from './domain/dto/authRegisterUser.dto';
 import { AuthResetPasswordDTO } from './domain/dto/authResetPassoword.dto';
+import { AuthForgotPasswordDTO } from './domain/dto/authForgotPassword.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +22,11 @@ export class AuthController {
 
   @Patch('reset-password')
   async resetPassword(@Body() { token, password }: AuthResetPasswordDTO) {
-    return this.authService.resetPassword({ token, password });
+    return this.authService.reset({ token, password });
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() { email}: AuthForgotPasswordDTO) {
+    return this.authService.forgot(email);
   }
 }
