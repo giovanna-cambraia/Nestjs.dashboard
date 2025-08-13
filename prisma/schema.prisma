@@ -19,6 +19,7 @@ model User {
   password  String
   role      Role     @default(USER)
   avatar    String?
+  hotels    Hotel[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -31,7 +32,9 @@ model Hotel {
   description String
   adress      String
   image       String?
-  price       String
+  price       Float
+  ownerId     Int
+  owner       User     @relation(fields: [ownerId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
