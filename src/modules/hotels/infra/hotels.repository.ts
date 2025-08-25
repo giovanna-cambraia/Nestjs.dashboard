@@ -9,7 +9,8 @@ import { UpdateHotelDto } from '../domain/dto/update-hotel.dto';
 export class HotelsRepositories implements IHotelRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  createHotel(data: CreateHotelDto): Promise<Hotel> {
+  createHotel(data: CreateHotelDto, id: number): Promise<Hotel> {
+    data.ownerId = id;
     return this.prisma.hotel.create({ data });
   }
 
@@ -17,12 +18,22 @@ export class HotelsRepositories implements IHotelRepository {
     return this.prisma.hotel.findUnique({ where: { id } });
   }
 
-  findHotelByName(name: string): Promise<Hotel | null> {
-    return this.prisma.hotel.findFirst({ where: { name } });
+  findHotelByName(name: string): Promise<Hotel[] | null> {
+    return this.prisma.hotel.findMany({
+      where: { name: { contains: name, mode: 'insensitive' } },
+    });
   }
 
-  findHotels(): Promise<Hotel[]> {
-    return this.prisma.hotel.findMany();
+  async findHotels(offSet: number, limit: number): Promise<Hotel[]> {
+    return this.prisma.hotel.findMany({
+      take: limit,
+      skip: offSet,
+      include: { owner: true },
+    });
+  }
+
+  countHotels(): Promise<number> {
+    return this.prisma.hotel.count();
   }
 
   findHotelByOwner(ownerId: number): Promise<Hotel[]> {

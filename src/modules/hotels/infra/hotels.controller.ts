@@ -24,6 +24,7 @@ import { Roles } from 'src/shared/decorators/roles.decorator';
 import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { RoleGuard } from 'src/shared/guards/role.guard';
 import { OwnerHotelGuard } from 'src/shared/guards/ownerHotel.guard';
+import { User } from 'src/shared/decorators/user.decorator';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('hotels')
@@ -40,16 +41,18 @@ export class HotelsController {
 
   @Roles(Role.USER)
   @Post()
-  create(@Body() createHotelDto: CreateHotelDto) {
-    return this.createHotelService.execute(createHotelDto);
+  create(@User('id') id: number, @Body() createHotelDto: CreateHotelDto) {
+    return this.createHotelService.execute(createHotelDto, id);
   }
 
   @Roles(Role.USER)
   @Get()
-  findAll() {
-    return this.findAllHotelService.execute();
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    return this.findAllHotelService.execute(Number(page), Number(limit));
   }
-
 
   @Roles(Role.USER)
   @Get('name')

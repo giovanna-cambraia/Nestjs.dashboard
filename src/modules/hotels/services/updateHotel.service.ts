@@ -10,6 +10,6 @@ export class UpdateHotelsService {
         private readonly hotelRepositories: IHotelRepository,
     ) {}
      async execute(id: number, updateHotelDto: UpdateHotelDto) {
-        return await this.hotelRepositories.updateHotel(id, updateHotelDto);
+        return await this.hotelRepositories.updateHotel(Number(id), updateHotelDto);
     }
 }

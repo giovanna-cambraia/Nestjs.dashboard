@@ -9,7 +9,7 @@ export class CreateHotelService {
     @Inject(HOTEL_REPOSITORY_TOKEN)
     private readonly hotelRepositories: IHotelRepository,
   ) {}
-  async execute(createHotelDto: CreateHotelDto) {
-    return await this.hotelRepositories.createHotel(createHotelDto);
+  async execute(createHotelDto: CreateHotelDto, id: number) {
+    return await this.hotelRepositories.createHotel(createHotelDto, id);
   }
 }
