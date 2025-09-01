@@ -8,6 +8,11 @@ import {
   Query,
   UseGuards,
   Param,
+  UploadedFile,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  ParseFilePipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UpdateHotelDto } from '../domain/dto/update-hotel.dto';
 import { CreateHotelService } from '../services/createHotel.service';
@@ -25,6 +30,9 @@ import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { RoleGuard } from 'src/shared/guards/role.guard';
 import { OwnerHotelGuard } from 'src/shared/guards/ownerHotel.guard';
 import { User } from 'src/shared/decorators/user.decorator';
+import { UploadImageHotelService } from '../services/UploadImageHotel.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationInterceptor } from 'src/shared/interceptors/fileValidation.interceptor';
 
 @UseGuards(AuthGuard, RoleGuard)
 @Controller('hotels')
@@ -37,6 +45,7 @@ export class HotelsController {
     private readonly removeHotelService: RemoveHotelsService,
     private readonly findHotelByOwnerService: FindByOwnerHotelsService,
     private readonly findHotelByNameService: FindByNameHotelsService,
+    private readonly uploadImageHotelService: UploadImageHotelService,
   ) {}
 
   @Roles(Role.USER)
@@ -70,6 +79,22 @@ export class HotelsController {
   @Get(':id')
   findOne(@ParamId() id: number) {
     return this.findOneHotelService.execute(id);
+  }
+
+  @UseInterceptors(FileInterceptor('image'), FileValidationInterceptor)
+  @Patch('image/:hotelId')
+  uploadImage(
+    @Param('hotelId') id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 900 * 1024 * 5 }),
+          new FileTypeValidator({ fileType: 'image/(jpg|jpeg|png|gif)' }),
+        ],
+      })
+  ) image: Express.Multer.File
+  ) {
+    return this.uploadImageHotelService.execute(id, image.filename)
   }
 
   @Roles(Role.USER)
