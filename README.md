@@ -70,7 +70,7 @@ npm run start:dev
 
 ### 📑 Example Endpoints
 
-Hotels
+### Hotels
 
 POST /hotels – Create a hotel (Admin only)
 
