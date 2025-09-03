@@ -44,6 +44,7 @@ It includes authentication, role-based access (User/Admin), and CRUD operations 
 git clone https://github.com/giovanna-cambraia/Nestjs.dashboard.git
 cd Nestjs.dashboard
 npm install
+```bash
 
 Environment Variables
 
