@@ -46,23 +46,30 @@ cd Nestjs.dashboard
 npm install
 ```
 
-Environment Variables
+### Environment Variables
 
 Create a .env file in the root:
 
+```bash
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/hoteldb"
 JWT_SECRET="yourSecretKey"
 PORT=3000
+```
 
-Run Database Migrations
+### Run Database Migrations
 
+```bash
 npx prisma migrate dev
+```
 
-Start the App
+### Start the App
 
+```bash
 npm run start:dev
+```
 
-📑 Example Endpoints
+### 📑 Example Endpoints
+
 Hotels
 
 POST /hotels – Create a hotel (Admin only)
@@ -75,7 +82,7 @@ PATCH /hotels/:id – Update hotel (Admin only)
 
 DELETE /hotels/:id – Remove hotel (Admin only)
 
-Reservations
+### Reservations
 
 POST /reservations – Create a reservation (User)
 
@@ -87,13 +94,13 @@ PATCH /reservations/:id – Update reservation
 
 DELETE /reservations/:id – Cancel reservation
 
-👥 Roles
+### 👥 Roles
 
-Admin
+### Admin
 
 Full CRUD on Hotels and Reservations.
 
-User
+### User
 
 CRUD only on their own Reservations.
 
